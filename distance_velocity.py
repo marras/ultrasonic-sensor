@@ -56,7 +56,7 @@ def get_new_distance(current_time):
     return min(current_time * SPEED, 90) + uniform(-NOISE, NOISE)
 
     # TODO: Get actual distance from sensor
-    
+
 def update(frame):
     global last_time, pause_time
     
@@ -80,14 +80,9 @@ def update(frame):
             last_x = np.array(list(x)[-MEAN_LAST_POINTS:])
             last_y = np.array(list(y)[-MEAN_LAST_POINTS:])
 
-
             A = np.vstack([last_x, np.ones(len(last_x))]).T
 
             current_v, _b = np.linalg.lstsq(A, last_y)[0]
-
-            print("last_x: ", last_x, "last_y: ", last_y, "current_v: ", current_v)
-
-            # current_v = (y[-1] - y[-5]) / (x[-1] - x[-5])
         else:
             current_v = 0
 
@@ -100,7 +95,6 @@ def update(frame):
         if current_time > WINDOW_X:
             ax[0].set_xlim(current_time - WINDOW_X, current_time)
             ax[1].set_xlim(current_time - WINDOW_X, current_time)
-
 
         status_text.set_text('Running')
     else:
