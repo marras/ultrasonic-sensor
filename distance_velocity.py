@@ -4,6 +4,7 @@ from random import uniform
 from collections import deque
 import numpy as np
 import time
+from measure import distance
 
 # Add pause state
 paused = False
@@ -53,7 +54,9 @@ def init():
 
 def get_new_distance(current_time):
     # Random
-    return min(current_time * SPEED, 90) + uniform(-NOISE, NOISE)
+    #return min(current_time * SPEED, 90) + uniform(-NOISE, NOISE)
+
+    return distance()
 
     # TODO: Get actual distance from sensor
 
