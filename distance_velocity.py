@@ -14,28 +14,27 @@ SAMPLE_TIME = 0.1
 NOISE = 1.5
 MEAN_LAST_POINTS = 5
 
-
 def plot_distance(ax):
-	ax.set_xlim(0, WINDOW_X)
-	ax.set_ylim(-1, 100)
-	ax.set_xlabel('Czas [s]')
-	ax.set_ylabel('Odległość [cm]')
-	ax.set_title('Odległość od czujnika ultradźwiękowego')
+    ax.set_xlim(0, WINDOW_X)
+    ax.set_ylim(-1, 100)
+    ax.set_xlabel('Czas [s]')
+    ax.set_ylabel('Odległość [cm]')
+    ax.set_title('Odległość od czujnika ultradźwiękowego')
 
-	line, = ax.plot([], [], 'b-', label='Położenie')
-	point, = ax.plot([], [], 'ro', label='Nowy punkt')
+    line, = ax.plot([], [], 'b-', label='Położenie')
+    point, = ax.plot([], [], 'ro', label='Nowy punkt')
 
-    return line
+    return (line, point)
 
 def plot_velocity(ax):
-	ax.set_xlim(0, WINDOW_X)
-	ax.set_ylim(-20, 50)
-	ax.set_xlabel('Czas [s]')
-	ax.set_ylabel('Prędkość [cm/s]')
-	ax.set_title('Prędkość chwilowa')
-	
-	line, = ax.plot([], [], 'b-', label='Prędkość')
-	point, = ax.plot([], [], 'ro', label='Nowy punkt 2')
+    ax.set_xlim(0, WINDOW_X)
+    ax.set_ylim(-20, 50)
+    ax.set_xlabel('Czas [s]')
+    ax.set_ylabel('Prędkość [cm/s]')
+    ax.set_title('Prędkość chwilowa')
+    
+    line, = ax.plot([], [], 'b-', label='Prędkość')
+    point, = ax.plot([], [], 'ro', label='Nowy punkt 2')
 
     return (line, point)
 
