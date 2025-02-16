@@ -9,30 +9,45 @@ from measure import distance
 # Add pause state
 paused = False
 
-SPEED = 20 ##### will be experimental
 WINDOW_X = 5
 SAMPLE_TIME = 0.1
 NOISE = 1.5
 MEAN_LAST_POINTS = 5
 
 
+def plot_distance(ax):
+	ax.set_xlim(0, WINDOW_X)
+	ax.set_ylim(-1, 100)
+	ax.set_xlabel('Czas [s]')
+	ax.set_ylabel('Odległość [cm]')
+	ax.set_title('Odległość od czujnika ultradźwiękowego')
+
+	line, = ax.plot([], [], 'b-', label='Położenie')
+	point, = ax.plot([], [], 'ro', label='Nowy punkt')
+
+    return line
+
+def plot_velocity(ax):
+	ax.set_xlim(0, WINDOW_X)
+	ax.set_ylim(-20, 50)
+	ax.set_xlabel('Czas [s]')
+	ax.set_ylabel('Prędkość [cm/s]')
+	ax.set_title('Prędkość chwilowa')
+	
+	line, = ax.plot([], [], 'b-', label='Prędkość')
+	point, = ax.plot([], [], 'ro', label='Nowy punkt 2')
+
+    return (line, point)
+
 # Create figure and subplot
-fig, ax = plt.subplots(2)
-ax[0].set_xlim(0, WINDOW_X)
-ax[0].set_ylim(-1, 100)
-ax[0].set_xlabel('Czas [s]')
-ax[0].set_ylabel('Odległość [cm]')
-ax[0].set_title('Odległość od czujnika ultradźwiękowego')
+NUM_SUBPLOTS = 2
+fig, ax = plt.subplots(NUM_SUBPLOTS)
 
-ax[1].set_xlim(0, WINDOW_X)
-ax[1].set_ylim(-20, 50)
-ax[1].set_xlabel('Czas [s]')
-ax[1].set_ylabel('Prędkość [cm/s]')
-ax[1].set_title('Prędkość chwilowa')
-
-
+dist_line, dist_point = plot_distance(ax[0])
+v_line, v_point = plot_velocity(ax[1])
+ 
 # Add status text
-status_text = ax[0].text(0.02, 0.99, 'Running', transform=ax[0].transAxes)
+status_text = ax[0].text(0.0, 0.05, 'Running', transform=ax[0].transAxes)
 
 # Initialize data
 x = deque(maxlen=int(WINDOW_X/SAMPLE_TIME))
@@ -45,11 +60,11 @@ last_time = 0
 def init():
     global start_time
     start_time = time.time()
-    line.set_data([], [])
-    point.set_data([], [])
+    dist_line.set_data([], [])
+    dist_point.set_data([], [])
     v_line.set_data([], [])
     v_point.set_data([], [])
-    return line, point, v_line,v_point, status_text
+    return dist_line, dist_point, v_line,v_point, status_text
 
 
 def get_new_distance(current_time):
@@ -57,8 +72,6 @@ def get_new_distance(current_time):
     #return min(current_time * SPEED, 90) + uniform(-NOISE, NOISE)
 
     return distance()
-
-    # TODO: Get actual distance from sensor
 
 def update(frame):
     global last_time, pause_time
@@ -74,8 +87,8 @@ def update(frame):
         y.append(new_y)
 
         # Set position
-        line.set_data(list(x), list(y))
-        point.set_data([current_time], [new_y])
+        dist_line.set_data(list(x), list(y))
+        dist_point.set_data([current_time], [new_y])
 
         # Calculate velocity
         if len(x) > MEAN_LAST_POINTS:
@@ -96,14 +109,14 @@ def update(frame):
 
         # Move time window if necessary
         if current_time > WINDOW_X:
-            ax[0].set_xlim(current_time - WINDOW_X, current_time)
-            ax[1].set_xlim(current_time - WINDOW_X, current_time)
-
+            for i in range(NUM_SUBPLOTS):
+                ax[i].set_xlim(current_time - WINDOW_X, current_time)
+           
         status_text.set_text('Running')
     else:
         status_text.set_text('Paused')
         
-    return line, point, v_line, v_point, status_text
+    return dist_line, dist_point, v_line, v_point, status_text
 
 # Spacja - pauza
 def on_key_press(event):
@@ -117,13 +130,6 @@ def on_key_press(event):
 
 # Connect keyboard event
 fig.canvas.mpl_connect('key_press_event', on_key_press)
-
-line, = ax[0].plot([], [], 'b-', label='Położenie')
-point, = ax[0].plot([], [], 'ro', label='Nowy punkt')
-
-v_line, = ax[1].plot([], [], 'b-', label='Prędkość')
-v_point, = ax[1].plot([], [], 'ro', label='Nowy punkt 2')
-
 
 ani = FuncAnimation(fig, update, init_func=init, 
                    interval=SAMPLE_TIME*1000, blit=True)

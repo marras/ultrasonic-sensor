@@ -9,7 +9,7 @@ GPIO.setmode(GPIO.BCM)
 #set GPIO Pins
 GPIO_TRIGGER = 18
 GPIO_ECHO = 24
- 
+
 START_DIST = 65
 END_DIST = 3
  
