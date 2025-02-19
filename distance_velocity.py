@@ -14,6 +14,9 @@ SAMPLE_TIME = 0.1
 NOISE = 1.5
 MEAN_LAST_POINTS = 5
 
+RANDOM=True
+SPEED=25
+
 def plot_distance(ax):
     ax.set_xlim(0, WINDOW_X)
     ax.set_ylim(-1, 100)
@@ -67,10 +70,10 @@ def init():
 
 
 def get_new_distance(current_time):
-    # Random
-    #return min(current_time * SPEED, 90) + uniform(-NOISE, NOISE)
-
-    return distance()
+    if RANDOM:
+        return min(current_time * SPEED, 90) + uniform(-NOISE, NOISE)
+    else:
+        return distance()
 
 def update(frame):
     global last_time, pause_time
