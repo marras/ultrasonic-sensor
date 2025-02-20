@@ -1,17 +1,7 @@
-from smbus2 import SMBus
+from mpu6050 import mpu6050
 
-# I2C device address
-DEVICE_ADDRESS = 0x48
+sensor = mpu6050.mpu6050(0x68)
 
-# Create an instance of the I2C bus
-bus = SMBus(1)
-
-# Write a byte to the device
-bus.write_byte(DEVICE_ADDRESS, 0x01)
-
-# Read a byte from the device
-data = bus.read_byte(DEVICE_ADDRESS)
-print(f"Data read: {data}")
-
-# Close the bus
-bus.close()
+while(True):
+    accel_data = sensor.get_accel_data()
+    print(accel_data)
