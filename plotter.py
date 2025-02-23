@@ -6,47 +6,63 @@ import time
 
 MEAN_LAST_POINTS = [None, 5, 10]
 
+COLORS = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
+
 class Plotter():
-    def __init__(self, measure_func, WINDOW_X, NUM_SUBPLOTS, SAMPLE_TIME, MOVE_WINDOW=True):
+    def __init__(self, measure_func, 
+                 WINDOW_X, NUM_SUBPLOTS, SAMPLE_TIME,
+                 WINDOW_Y = [[-1, 100], [-20,50], [-50,50]],
+                 MOVE_WINDOW=True):
         self.MOVE_WINDOW = MOVE_WINDOW
         self.measure_func = measure_func
         self.WINDOW_X = WINDOW_X
+        self.WINDOW_Y = WINDOW_Y
         self.NUM_SUBPLOTS = NUM_SUBPLOTS
-        self.fig, self.ax = plt.subplots(NUM_SUBPLOTS, layout="tight")
+        self.fig, _ = plt.subplots(NUM_SUBPLOTS, layout="tight", figsize=(4, 8))
+        self.ax = self.fig.axes
+
         self.SAMPLE_TIME = SAMPLE_TIME
 
-        self.x = deque(maxlen=int(WINDOW_X/SAMPLE_TIME))
-        self.y = [deque(maxlen=int(WINDOW_X/SAMPLE_TIME)),deque(maxlen=int(WINDOW_X/SAMPLE_TIME)),deque(maxlen=int(WINDOW_X/SAMPLE_TIME))]
+        # We will increase this for every new run in start_new_run()
+        self.current_dataset = -1
 
-        # Special case for single plot - ax is not an array
-        if (NUM_SUBPLOTS == 1):
-            line, dist_point = self.init_plot_distance(self.ax)
-            
-        if (NUM_SUBPLOTS > 1):
+        self.x = []
+        self.y = []
+
+        self.drawings = []
+
+
+    def start_new_run(self):
+        self.current_dataset += 1
+        self.x.append(deque(maxlen=int(self.WINDOW_X/self.SAMPLE_TIME)))
+        self.y.append([deque(maxlen=int(self.WINDOW_X/self.SAMPLE_TIME)),
+                       deque(maxlen=int(self.WINDOW_X/self.SAMPLE_TIME)),
+                       deque(maxlen=int(self.WINDOW_X/self.SAMPLE_TIME))])
+
+        # Extend = append but to a flat list
+        if (self.NUM_SUBPLOTS >= 1):
             line, dist_point = self.init_plot_distance(self.ax[0])
+            self.drawings.extend([line, dist_point])
 
-        drawings = [[line, dist_point]]
-
-        if (NUM_SUBPLOTS >= 2):
+        if (self.NUM_SUBPLOTS >= 2):
             v_line, v_point = self.init_plot_velocity(self.ax[1])
-            drawings.append([v_line, v_point])
+            self.drawings.extend([v_line, v_point])
 
-        if (NUM_SUBPLOTS >= 3):
+        if (self.NUM_SUBPLOTS >= 3):
             a_line, a_point = self.init_plot_acceleration(self.ax[2])
-            drawings.append([a_line, a_point])
+            self.drawings.extend([a_line, a_point])
 
-        # Flatten the list of drawings
-        self.drawings = [item for sublist in drawings for item in sublist]
-
+    def get_color(self):
+        return COLORS[self.current_dataset % len(COLORS)]
 
     def init_plot_distance(self, ax):
         ax.set_xlim(0, self.WINDOW_X)
-        ax.set_ylim(-1, 100)
+        ax.set_ylim([-1, 100])
         ax.set_xlabel('Czas [s]')
         ax.set_ylabel('Odległość [cm]')
         ax.set_title('Odległość od czujnika ultradźwiękowego')
 
-        line, = ax.plot([], [], 'b-', label='Położenie')
+        line, = ax.plot([], [], self.get_color() + '-', label='Położenie %d' % self.current_dataset)
         point, = ax.plot([], [], 'ro', label='Nowy punkt')
 
         return (line, point)
@@ -58,7 +74,7 @@ class Plotter():
         ax.set_ylabel('Prędkość [cm/s]')
         ax.set_title('Prędkość chwilowa')
         
-        line, = ax.plot([], [], 'b-', label='Prędkość')
+        line, = ax.plot([], [], self.get_color() + '-', label='Prędkość %d' % self.current_dataset)
         point, = ax.plot([], [], 'ro', label='Nowy punkt 2')
 
         return (line, point)
@@ -70,7 +86,7 @@ class Plotter():
         ax.set_ylabel('Przyspieszenie [cm/s]')
         ax.set_title('Przyspieszenie chwilowe')
         
-        line, = ax.plot([], [], 'b-', label='Przyspieszenie')
+        line, = ax.plot([], [], self.get_color() + '-', label='Przyspieszenie %d' % self.current_dataset)
         point, = ax.plot([], [], 'ro', label='Nowy punkt 3')
 
         return (line, point)
@@ -89,22 +105,31 @@ class Plotter():
             a = 0
 
         return a
+    
+    def current_x(self):
+        return self.x[self.current_dataset]
+
+    def current_y(self):
+        return self.y[self.current_dataset]
+
 
     def animate(self, _frame):
         current_time = time.time() - self.start_time
-        self.x.append(current_time)
+        self.current_x().append(current_time)
 
         # Set position
         for i in range(self.NUM_SUBPLOTS):
             if i == 0:
                 new_y = self.measure_func(current_time)
             else:
-                new_y = self.derivative(self.x, self.y[i-1], MEAN_LAST_POINTS[i])
+                new_y = self.derivative(self.current_x(), self.current_y()[i-1], MEAN_LAST_POINTS[i])
 
-            self.y[i].append(new_y) # If possible, calculate a new point based on the derivative of the previous plot
+            self.current_y()[i].append(new_y) # If possible, calculate a new point based on the derivative of the previous plot
 
-            self.drawings[2*i].set_data(list(self.x), list(self.y[i])) # Line
-            self.drawings[2*i+1].set_data([current_time], [new_y]) # Point
+            current_drawing_index = self.current_dataset * self.NUM_SUBPLOTS * 2 + 2*i
+
+            self.drawings[current_drawing_index].set_data(list(self.current_x()), list(self.current_y()[i])) # Line
+            self.drawings[current_drawing_index+1].set_data([current_time], [new_y]) # Point
 
         # Move time window if necessary
         if current_time > self.WINDOW_X:
@@ -118,10 +143,14 @@ class Plotter():
 
     def pause(self):
         self.ani.event_source.stop()
+        print("v_avg: %.2f cm/s" % np.mean(self.current_y()[1]))
+        print("v_max: %.2f cm/s" % np.max(self.current_y()[1]))
 
     def run(self):
         self.start_time = time.time()
+        self.start_new_run()
         self.ani = FuncAnimation(self.fig, self.animate, interval=self.SAMPLE_TIME*1000, blit=self.MOVE_WINDOW, repeat=False)
+        
         # ax.legend()
         plt.show()
 
