@@ -11,7 +11,7 @@ class Plotter():
         self.measure_func = measure_func
         self.WINDOW_X = WINDOW_X
         self.NUM_SUBPLOTS = NUM_SUBPLOTS
-        self.fig, self.ax = plt.subplots(NUM_SUBPLOTS)
+        self.fig, self.ax = plt.subplots(NUM_SUBPLOTS, layout="tight")
         self.SAMPLE_TIME = SAMPLE_TIME
 
         self.x = deque(maxlen=int(WINDOW_X/SAMPLE_TIME))
