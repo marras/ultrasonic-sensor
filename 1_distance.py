@@ -1,6 +1,7 @@
 from random import uniform
 from plotter import Plotter
 import time
+import sys
 # from measure import distance
 
 paused = False
@@ -19,17 +20,6 @@ def get_new_distance(current_time):
     return min(current_time * SPEED, 90) + uniform(-NOISE, NOISE)
     #return distance() # Actual measurement
 
-# Create figure and subplot
-plotter = Plotter(get_new_distance, WINDOW_X, NUM_SUBPLOTS, SAMPLE_TIME)
-
-# Initialize data
-start_time = None
-pause_time = 0
-last_time = 0
-
-# global start_time
-start_time = time.time()
-
 # Spacja - pauza
 def on_key_press(event):
     global paused, pause_time
@@ -42,8 +32,23 @@ def on_key_press(event):
             print ("Running")
             # start_time = time.time() - last_time
 
-# Connect keyboard event
-plotter.fig.canvas.mpl_connect('key_press_event', on_key_press)
 
-plotter.run()
+if __name__ == '__main__':
+    NUM_SUBPLOTS = int(sys.argv[1])
+
+    # Create figure and subplot
+    plotter = Plotter(get_new_distance, WINDOW_X, NUM_SUBPLOTS, SAMPLE_TIME)
+
+    # Initialize data
+    start_time = None
+    pause_time = 0
+    last_time = 0
+
+    # global start_time
+    start_time = time.time()
+
+    #Connect keyboard event
+    plotter.fig.canvas.mpl_connect('key_press_event', on_key_press)
+
+    plotter.run()
 
