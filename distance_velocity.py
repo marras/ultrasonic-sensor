@@ -4,7 +4,7 @@ from random import uniform
 from collections import deque
 import numpy as np
 import time
-from measure import distance
+# from measure import distance
 
 # Add pause state
 paused = False
@@ -70,10 +70,10 @@ def init():
 
 
 def get_new_distance(current_time):
-    if RANDOM:
+    # if RANDOM:
         return min(current_time * SPEED, 90) + uniform(-NOISE, NOISE)
-    else:
-        return distance()
+    # else:
+        # return distance()
 
 def update(frame):
     global last_time, pause_time
