@@ -7,7 +7,8 @@ import time
 MEAN_LAST_POINTS = [None, 5, 10]
 
 class Plotter():
-    def __init__(self, measure_func, WINDOW_X, NUM_SUBPLOTS, SAMPLE_TIME):
+    def __init__(self, measure_func, WINDOW_X, NUM_SUBPLOTS, SAMPLE_TIME, MOVE_WINDOW=True):
+        self.MOVE_WINDOW = MOVE_WINDOW
         self.measure_func = measure_func
         self.WINDOW_X = WINDOW_X
         self.NUM_SUBPLOTS = NUM_SUBPLOTS
@@ -107,14 +108,17 @@ class Plotter():
 
         # Move time window if necessary
         if current_time > self.WINDOW_X:
-            for i in range(self.NUM_SUBPLOTS):
-                self.ax[i].set_xlim(current_time - self.WINDOW_X, current_time)
+            if self.MOVE_WINDOW:
+                for i in range(self.NUM_SUBPLOTS):
+                    self.ax[i].set_xlim(current_time - self.WINDOW_X, current_time)
+            else:
+                self.ani.event_source.stop()
             
         return self.drawings
 
     def run(self):
         self.start_time = time.time()
-        ani = FuncAnimation(self.fig, self.animate, interval=self.SAMPLE_TIME*1000, blit=True)
+        self.ani = FuncAnimation(self.fig, self.animate, interval=self.SAMPLE_TIME*1000, blit=True, repeat=False)
         # ax.legend()
         plt.show()
 

@@ -11,6 +11,7 @@ SAMPLE_TIME = 0.1
 NOISE = 1.5
 
 NUM_SUBPLOTS = 3
+MOVE_WINDOW = False
 
 RANDOM=True
 SPEED=25
@@ -37,7 +38,7 @@ if __name__ == '__main__':
     NUM_SUBPLOTS = int(sys.argv[1])
 
     # Create figure and subplot
-    plotter = Plotter(get_new_distance, WINDOW_X, NUM_SUBPLOTS, SAMPLE_TIME)
+    plotter = Plotter(get_new_distance, WINDOW_X, NUM_SUBPLOTS, SAMPLE_TIME, MOVE_WINDOW)
 
     # Initialize data
     start_time = None
