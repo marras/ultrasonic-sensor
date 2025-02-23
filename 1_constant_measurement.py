@@ -11,7 +11,7 @@ SAMPLE_TIME = 0.1
 NOISE = 1.5
 
 NUM_SUBPLOTS = 3
-MOVE_WINDOW = False
+MOVE_WINDOW = True
 
 RANDOM=True
 SPEED=25
@@ -20,18 +20,6 @@ SPEED=25
 def get_new_distance(current_time):
     return min(current_time * SPEED, 90) + uniform(-NOISE, NOISE)
     #return distance() # Actual measurement
-
-# Spacja - pauza
-def on_key_press(event):
-    global paused, pause_time
-    if event.key == ' ':  # spacebar
-        paused = not paused
-        if paused:
-            print ("Paused")
-            # pause_time = time.time() - start_time - last_time
-        else:
-            print ("Running")
-            # start_time = time.time() - last_time
 
 
 if __name__ == '__main__':
@@ -47,9 +35,6 @@ if __name__ == '__main__':
 
     # global start_time
     start_time = time.time()
-
-    #Connect keyboard event
-    plotter.fig.canvas.mpl_connect('key_press_event', on_key_press)
 
     plotter.run()
 

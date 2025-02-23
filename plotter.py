@@ -112,13 +112,16 @@ class Plotter():
                 for i in range(self.NUM_SUBPLOTS):
                     self.ax[i].set_xlim(current_time - self.WINDOW_X, current_time)
             else:
-                self.ani.event_source.stop()
+                self.pause()
             
         return self.drawings
 
+    def pause(self):
+        self.ani.event_source.stop()
+
     def run(self):
         self.start_time = time.time()
-        self.ani = FuncAnimation(self.fig, self.animate, interval=self.SAMPLE_TIME*1000, blit=True, repeat=False)
+        self.ani = FuncAnimation(self.fig, self.animate, interval=self.SAMPLE_TIME*1000, blit=self.MOVE_WINDOW, repeat=False)
         # ax.legend()
         plt.show()
 
