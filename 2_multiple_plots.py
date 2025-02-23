@@ -5,6 +5,7 @@ import sys
 # from measure import distance
 
 WINDOW_X = 5
+WINDOW_Y = [[-1, 100], [-20,50], [-50,50]]
 SAMPLE_TIME = 0.1
 NOISE = 1.5
 
@@ -37,7 +38,7 @@ if __name__ == '__main__':
     NUM_SUBPLOTS = int(sys.argv[1])
 
     # Create figure and subplot
-    plotter = Plotter(get_new_distance, WINDOW_X, NUM_SUBPLOTS, SAMPLE_TIME, MOVE_WINDOW)
+    plotter = Plotter(get_new_distance, WINDOW_X, NUM_SUBPLOTS, SAMPLE_TIME, WINDOW_Y, MOVE_WINDOW)
 
     # Initialize data
     start_time = None
