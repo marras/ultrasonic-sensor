@@ -42,7 +42,7 @@ def bounce_time():
 if __name__ == '__main__':
     try:
         while True:
-            print ("Bounce time: %.2f", bounce_time())
+            print ("Bounce time: %.2f ms" % bounce_time() * 1000)
             
             time.sleep(1.0) 
  
