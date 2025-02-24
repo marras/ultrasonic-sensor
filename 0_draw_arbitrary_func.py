@@ -39,6 +39,7 @@ while (True):
         print("Invalid formula")
         continue
 
-    plt.plot(x_array, y_array)
-    plt.show()
-    break
+    plt.plot(x_array, y_array, label="y = %s" % formula)
+    plt.legend()
+    plt.draw()
+    plt.pause(0.1)
