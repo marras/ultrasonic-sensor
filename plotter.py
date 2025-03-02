@@ -3,6 +3,7 @@ from matplotlib.animation import FuncAnimation
 from collections import deque
 import numpy as np
 import time
+from accel import get_angles
 
 MEAN_LAST_POINTS = [None, 5, 10]
 
@@ -18,7 +19,7 @@ class Plotter():
         self.WINDOW_X = WINDOW_X
         self.WINDOW_Y = WINDOW_Y
         self.NUM_SUBPLOTS = NUM_SUBPLOTS
-        self.fig, _ = plt.subplots(NUM_SUBPLOTS, layout="tight", figsize=(4, 8))
+        self.fig, _ = plt.subplots(NUM_SUBPLOTS, layout="tight", figsize=(16, 8))
         self.ax = self.fig.axes
 
         self.SAMPLE_TIME = SAMPLE_TIME
@@ -138,7 +139,10 @@ class Plotter():
                     self.ax[i].set_xlim(current_time - self.WINDOW_X, current_time)
             else:
                 self.pause()
-            
+        
+        alpha, beta = get_angles() 
+        print("α = %.0f°" % alpha)
+
         return self.drawings
 
     def pause(self):
