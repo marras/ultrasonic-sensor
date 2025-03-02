@@ -27,8 +27,8 @@ def get_angles():
 
     return alpha, beta
 
-
-while(True):
-    alpha, beta = get_angles()
-    print("Kąt alfa: %.0f, Kąt beta: %.0f" % (alpha, beta))
-    sleep(DELAY)
+if __name__ == '__main__':
+    while(True):
+        alpha, beta = get_angles()
+        print("Kąt alfa: %.0f, Kąt beta: %.0f" % (alpha, beta))
+        sleep(DELAY)
