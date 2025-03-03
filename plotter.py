@@ -21,6 +21,7 @@ class Plotter():
         self.NUM_SUBPLOTS = NUM_SUBPLOTS
         self.fig, _ = plt.subplots(NUM_SUBPLOTS, layout="tight", figsize=(16, 8))
         self.ax = self.fig.axes
+        self.ani = None
 
         self.SAMPLE_TIME = SAMPLE_TIME
 
@@ -53,6 +54,8 @@ class Plotter():
             a_line, a_point = self.init_plot_acceleration(self.ax[2])
             self.drawings.extend([a_line, a_point])
 
+        self.ax[0].legend()
+
     def get_color(self):
         return COLORS[self.current_dataset % len(COLORS)]
 
@@ -63,8 +66,8 @@ class Plotter():
         ax.set_ylabel('Odległość [cm]')
         ax.set_title('Odległość od czujnika ultradźwiękowego')
 
-        line, = ax.plot([], [], self.get_color() + '-', label='Położenie %d' % self.current_dataset)
-        point, = ax.plot([], [], 'ro', label='Nowy punkt')
+        line, = ax.plot([], [], self.get_color() + '-', label='%d. (α = %.0f)' % (self.current_dataset, get_angles()[0]))
+        point, = ax.plot([], [], 'ro')
 
         return (line, point)
 
@@ -147,14 +150,22 @@ class Plotter():
 
     def pause(self):
         self.ani.event_source.stop()
-        print("v_avg: %.2f cm/s" % np.mean(self.current_y()[1]))
-        print("v_max: %.2f cm/s" % np.max(self.current_y()[1]))
+
+        if len(self.current_y()[1]) > 0: 
+            print("v_avg: %.2f cm/s" % np.mean(self.current_y()[1]))
+            print("v_max: %.2f cm/s" % np.max(self.current_y()[1]))
+        else:
+            print("Not enough data to calculate average velocity.")
 
     def run(self):
         self.start_time = time.time()
         self.start_new_run()
-        self.ani = FuncAnimation(self.fig, self.animate, interval=self.SAMPLE_TIME*1000, blit=self.MOVE_WINDOW, repeat=False)
-        
-        # ax.legend()
-        plt.show()
+
+        if self.ani:
+            print("New run started.")
+            self.ani.event_source.start()
+        else:
+            print("Starting first run.")
+            self.ani = FuncAnimation(self.fig, self.animate, interval=self.SAMPLE_TIME*1000, blit=self.MOVE_WINDOW, repeat=False)
+            plt.show()
 
