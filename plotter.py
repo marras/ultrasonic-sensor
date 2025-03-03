@@ -158,14 +158,14 @@ class Plotter():
             print("Not enough data to calculate average velocity.")
 
     def run(self):
-        self.start_time = time.time()
         self.start_new_run()
+        self.start_time = time.time()
 
         if self.ani:
             print("New run started.")
             self.ani.event_source.start()
         else:
-            print("Starting first run.")
+            print("Starting first run.", self.SAMPLE_TIME)
             self.ani = FuncAnimation(self.fig, self.animate, interval=self.SAMPLE_TIME*1000, blit=self.MOVE_WINDOW, repeat=False)
             plt.show()
 

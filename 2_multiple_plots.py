@@ -4,9 +4,9 @@ import time
 import sys
 from measure import distance
 
-WINDOW_X = 5
+WINDOW_X = 2.5
 WINDOW_Y = [[-1, 100], [-20,50], [-50,50]]
-SAMPLE_TIME = 0.1
+SAMPLE_TIME = 0.01
 NOISE = 1.5
 
 NUM_SUBPLOTS = 1
@@ -41,8 +41,6 @@ if __name__ == '__main__':
 
     # Initialize data
     start_time = None
-    pause_time = 0
-    last_time = 0
 
     # global start_time
     start_time = time.time()
